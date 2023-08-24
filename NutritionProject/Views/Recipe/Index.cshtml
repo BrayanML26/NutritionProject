@@ -1,0 +1,286 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Header-->
+<header class="bg-dark">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">RECIPES</h1>
+            <form id="formBusqueda" class="d-flex justify-content-center">
+                <div class="input-group">
+                    <input type="text" id="campoBusqueda" class="form-control" placeholder="Buscar...">
+                    <button id="btnaplicarfiltro" class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-filter"></i> Aplicar Filtro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</header>
+
+
+<!-- Section-->
+<section>
+    <div class="container-fluid px-5 my-5">
+
+        <div class="row">
+
+            <div class="col-sm-3">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header bg-dark text-white">
+                                Tipo de Dieta
+                            </div>
+                            <div id="contenedor_tipodieta" class="card-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header bg-dark text-white">
+                                Alimento
+                            </div>
+                            <div id="contenedor_alimento" class="card-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="row mb-3">
+                        <div class="col-sm-12">
+                            <div class="d-grid gap-2">
+                                <button id="btnaplicarfiltro" class="btn btn-outline-dark btn-block" type="button">
+                                    <i class="fas fa-filter"></i>Aplicar Filtro
+                                </button>
+                            </div>
+                        </div>
+                    </div>*@
+            </div>
+
+            <div class="col-sm-9">
+                <div id="contenedor_receta" class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Product image-->
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">Fancy Product</h5>
+                                    <!-- Product price-->
+                                    $40.00 - $80.00
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Sale badge-->
+                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+                            <!-- Product image-->
+                            <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">Special Item</h5>
+                                    <!-- Product reviews-->
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                    </div>
+                                    <!-- Product price-->
+                                    <span class="text-muted text-decoration-line-through">$20.00</span>
+                                    $18.00
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</section>
+
+@section scripts {
+
+    <script>
+
+        $(document).ready(function () {
+            MostrarTipoDieta();
+            MostrarRecetas(0,0);
+        })
+
+        function MostrarTipoDieta() {
+            jQuery.ajax({
+                url: "@Url.Action("ListarTipoDieta", "Recipe")",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    //$("#contenedor_tipodieta").LoadingOverLay("hide");
+
+                    $("<div>").addClass("form-check").append(
+                        $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "tipodieta", "value": "0", "id": "tdx", "checked": "checked" }),
+                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for":"tdx" })
+                    ).appendTo("#contenedor_tipodieta")
+
+                    $.each(response.data, function (i, element) {
+                        $("<div>").addClass("form-check").append(
+                            $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "tipodieta", "value": element.Diet_Type_Id, "id": "td" + i }),
+                            $("<label>").addClass("form-check-label").text(element.Name_).attr({ "for": "td" + i })
+                        ).appendTo("#contenedor_tipodieta")
+                    })
+                    MostrarAlimentos();
+                },
+                beforeSend: function () {
+                    //$("#contenedor_tipodieta").LoadingOverLay("show");
+                }
+            })
+        }
+
+        function MostrarAlimentos() {
+
+            var _idtipodieta = $("input[name=tipodieta]:checked").val()
+
+            jQuery.ajax({
+                url: "@Url.Action("ListarAlimentosPorDieta", "Recipe")",
+                type: "POST",
+                data: JSON.stringify({ idtipodieta: _idtipodieta }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $("#contenedor_alimento").html("");
+                    //$("#contenedor_alimento").LoadingOverLay("hide");
+
+                    $("<div>").addClass("form-check").append(
+                        $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "alimento", "value": "0", "id": "ax", "checked": "checked" }),
+                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for":"ax" })
+                    ).appendTo("#contenedor_alimento")
+
+                    $.each(response.data, function (i, element) {
+                        $("<div>").addClass("form-check").append(
+                            $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "alimento", "value": element.Food_Id, "id": "a" + i }),
+                            $("<label>").addClass("form-check-label").text(element.Name_).attr({ "for": "a" + i })
+                        ).appendTo("#contenedor_alimento")
+                    })
+                },
+                beforeSend: function () {
+                    //$("#contenedor_alimento").LoadingOverLay("show");
+                }
+            })
+        }
+
+        $(document).on("change", "input[name=tipodieta]", function () {
+            MostrarAlimentos();
+        })
+
+        function MostrarRecetas(_idtipodieta, _idalimento, _busqueda) {
+
+            jQuery.ajax({
+                url: "@Url.Action("ListarReceta", "Recipe")",
+                type: "POST",
+                data: JSON.stringify({ idtipodieta: _idtipodieta, idalimento: _idalimento, busqueda: _busqueda }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $("#contenedor_receta").html("");
+                    //$("#contenedor_receta").LoadingOverLay("hide"
+
+                    $.each(response.data, function (i, element) {
+
+                        $("<div>").addClass("col mb-5").append(
+                            $("<div>").addClass("card h-100").append(
+                                $("<img>").addClass("card-img-top").attr("src", "data:image/jpeg;base64," + element.Image_),
+
+                                $("<div>").addClass("card-body p-4").append(
+                                    $("<div>").addClass("text-center").append(
+                                        $("<h5>").addClass("fw-bolder").text(element.Name_),
+                                    )
+                                ),
+                                $("<div>").addClass("card-footer p-2 pt-0 border-top-0 bg-transparent").append(
+
+                                        $("<div>").addClass("d-grid gap-2").append(
+                                            @if (Session["Usuario"] != null) {
+                                                @:$("<button>").addClass("btn btn-success mt-auto agregarfavorito").data("idreceta", element.Recipe_Id).text("Agregar a favoritos"),
+                                            }
+
+                                            $("<a>").addClass("btn btn-dark mt-auto")
+                                                .attr({ "href": "@Url.Action("DetalleReceta","Recipe")" + "?idreceta=" + element.Recipe_Id })
+                                                .text("Ver detalle")
+                                        )
+                                )
+                            )
+                        ).appendTo("#contenedor_receta")
+                    })
+                },
+                beforeSend: function () {
+                    //$("#contenedor_receta").LoadingOverLay("show");
+                }
+            })
+        }
+
+        $(document).on("click", "#btnaplicarfiltro", function () {
+            var _idtipodieta = $("input[name=tipodieta]:checked").val();
+            var _idalimento = $("input[name=alimento]:checked").val();
+            var _busqueda = $("#campoBusqueda").val();
+            MostrarRecetas(_idtipodieta, _idalimento, _busqueda);
+        });
+
+
+
+
+
+
+
+        $(document).on("click", "button.agregarfavorito", function () {
+            console.log($(this).data("idreceta"))
+
+            jQuery.ajax({
+                url: "@Url.Action("AgregarFavorito", "Recipe")",
+                type: "POST",
+                data: JSON.stringify({ idreceta: $(this).data("idreceta") }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.respuesta) {
+                        MostrarCantidadFavorito();
+                        swal("", "Agregada a favoritos", "success");
+                    }
+                    else {
+                        swal("", data.mensaje, "warning");
+                    }
+                },
+                beforeSend: function () {
+                }
+            });
+        })
+
+    </script>
+
+}

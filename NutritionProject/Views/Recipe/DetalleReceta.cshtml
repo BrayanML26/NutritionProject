@@ -1,0 +1,115 @@
+﻿@model CapaEntidad.Recetas
+@{
+    ViewBag.Title = "DetalleReceta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6">
+                <img class="card-img-top mb-5 mb-md-0" src="data:image/jpeg;base64,@Html.DisplayFor(a => a.Image_)" alt="..." />
+            </div>
+
+            <div class="col-md-6">
+                @*<div class="small mb-1">Alimento Principal: @Html.DisplayTextFor(a => a.oFood_Id)</div>*@
+
+                <h1 class="display-5 fw-bolder">@Html.DisplayTextFor(a => a.Name_)</h1>
+                <p class="lead">@Html.DisplayTextFor(a => a.Description_)</p>
+
+                @*<h2>Datos de la Receta</h2>*@
+                <hr />
+                <p>Tiempo Preparacion: @Html.DisplayTextFor(a => a.Time_Preparation) Mins</p>
+                <p>Porciones: @Html.DisplayTextFor(a => a.Servings)</p>
+
+                <h3>Ingredientes</h3>
+                <p>@Html.DisplayTextFor(a => a.Ingredients)</p>
+
+                <h3>Instrucciones</h3>
+                <p>@Html.DisplayTextFor(a => a.Steps)</p>
+
+                <hr />
+                <h2>Datos Nutricionales</h2>
+                <hr />
+
+                @*<h3>Datos Nutricionales</h3>
+                @if (Model != null && Model.Datos != null && Model.Datos.Count > 0)
+                {
+                    foreach (var dato in Model.Datos)
+                    {
+                        <p>@dato.Nutrient: @dato.Value_ @dato.Unit</p>
+                    }
+                }
+                else
+                {
+                    <p>No hay datos nutricionales disponibles.</p>
+                }*@
+
+
+
+                <div class="d-flex">
+                    <a href="@Url.Action("Index","Recipe")" class="btn btn-danger w-50 text-center me-3">
+                        <i class="fas fa-undo-alt"></i>Volver
+
+                    </a>
+
+                    @if (Session["Usuario"] != null)
+                    {
+                        <button class="btn btn-success agregarfavorito flex-shrink-0 w-50" type="button" data-idreceta=@Html.DisplayTextFor(a => a.Recipe_Id)>
+                            <i class="fas fa-heart me-1"></i> Agregar a favorito
+
+                        </button>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section scripts {
+
+    <script>
+
+        $(document).on("click", "button.agregarfavorito", function () {
+            console.log($(this).data("idreceta"))
+
+            jQuery.ajax({
+                url: "@Url.Action("AgregarFavorito", "Recipe")",
+                type: "POST",
+                data: JSON.stringify({ idreceta: $(this).data("idreceta") }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.respuesta) {
+                        MostrarCantidadFavorito();
+
+                        @*swal({
+                            title: "Agregada a favoritos",
+                            text: "Desea ir a favorito?",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-primary",
+                            confirmButtonText: "Si",
+                            cancelButtonText: "No",
+                            closeOnConfirm: true
+                        }, function () {
+                            window.Location.href = '@Url.Action("Favorito","Recipe")'
+                        })*@
+                        swal("", "Agregada a favoritos", "success");
+                    }
+                    else {
+                        swal("", data.mensaje, "warning");
+                    }
+                },
+                beforeSend: function () {
+                }
+            });
+        })
+
+
+    </script>
+
+}
