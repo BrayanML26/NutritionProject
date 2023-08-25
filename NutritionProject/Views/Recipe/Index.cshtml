@@ -30,6 +30,19 @@
 
             <div class="col-sm-3">
                 <div class="row mb-3">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            Objetivo Nutricional
+                        </div>
+                        <div id="contenedor_objetivos" class="card-body">
+
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="row mb-3">
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header bg-dark text-white">
@@ -56,14 +69,14 @@
                 </div>
 
                 @*<div class="row mb-3">
-                        <div class="col-sm-12">
-                            <div class="d-grid gap-2">
-                                <button id="btnaplicarfiltro" class="btn btn-outline-dark btn-block" type="button">
-                                    <i class="fas fa-filter"></i>Aplicar Filtro
-                                </button>
-                            </div>
-                        </div>
-                    </div>*@
+            <div class="col-sm-12">
+                <div class="d-grid gap-2">
+                    <button id="btnaplicarfiltro" class="btn btn-outline-dark btn-block" type="button">
+                        <i class="fas fa-filter"></i>Aplicar Filtro
+                    </button>
+                </div>
+            </div>
+        </div>*@
             </div>
 
             <div class="col-sm-9">
@@ -133,8 +146,37 @@
 
         $(document).ready(function () {
             MostrarTipoDieta();
-            MostrarRecetas(0,0);
+            MostrarObjetivosNutricionales();
+            MostrarRecetas(0, 0, "", 0);
         })
+
+        function MostrarObjetivosNutricionales() {
+            jQuery.ajax({
+                url: "@Url.Action("ListarObjetivoNutricional", "Recipe")",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    //$("#contenedor_objetivos").LoadingOverLay("hide");
+
+                    $("<div>").addClass("form-check").append(
+                        $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "objetivos", "value": "0", "id": "ngx", "checked": "checked" }),
+                        $("<label>").addClass("form-check-label").text("Todos").attr({ "for":"ngx" })
+                    ).appendTo("#contenedor_objetivos")
+
+                    $.each(response.data, function (i, element) {
+                        $("<div>").addClass("form-check").append(
+                            $("<input>").addClass("form-check-input").attr({ "type": "radio", "name": "objetivos", "value": element.Nutritional_Goal_Id, "id": "ng" + i }),
+                            $("<label>").addClass("form-check-label").text(element.Name_).attr({ "for": "ng" + i })
+                        ).appendTo("#contenedor_objetivos")
+                    })
+                },
+                beforeSend: function () {
+                    //$("#contenedor_objetivos").LoadingOverLay("show");
+                }
+            })
+        }
+
 
         function MostrarTipoDieta() {
             jQuery.ajax({
@@ -200,12 +242,15 @@
             MostrarAlimentos();
         })
 
-        function MostrarRecetas(_idtipodieta, _idalimento, _busqueda) {
+        function MostrarRecetas(_idtipodieta, _idalimento, _busqueda, _idobjetivonutricional) {
+            var objetivoNutricionalSeleccionado = $("input[name=objetivos]:checked").val();
+
+            console.log("Objetivo nutricional seleccionado:", objetivoNutricionalSeleccionado);
 
             jQuery.ajax({
                 url: "@Url.Action("ListarReceta", "Recipe")",
                 type: "POST",
-                data: JSON.stringify({ idtipodieta: _idtipodieta, idalimento: _idalimento, busqueda: _busqueda }),
+                data: JSON.stringify({ idtipodieta: _idtipodieta, idalimento: _idalimento, busqueda: _busqueda, idobjetivonutricional: _idobjetivonutricional }),
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
@@ -239,6 +284,10 @@
                         ).appendTo("#contenedor_receta")
                     })
                 },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Error en la solicitud AJAX:", textStatus, errorThrown);
+                    console.log(jqXHR.responseText); // Muestra la respuesta completa del servidor
+                },
                 beforeSend: function () {
                     //$("#contenedor_receta").LoadingOverLay("show");
                 }
@@ -249,7 +298,8 @@
             var _idtipodieta = $("input[name=tipodieta]:checked").val();
             var _idalimento = $("input[name=alimento]:checked").val();
             var _busqueda = $("#campoBusqueda").val();
-            MostrarRecetas(_idtipodieta, _idalimento, _busqueda);
+            var _idobjetivonutricional = $("input[name=objetivos]:checked").val();
+            MostrarRecetas(_idtipodieta, _idalimento, _busqueda, _idobjetivonutricional);
         });
 
 

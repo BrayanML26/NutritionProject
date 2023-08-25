@@ -22,7 +22,7 @@ namespace CapaDatos
                     StringBuilder sb = new StringBuilder();
 
                     sb.AppendLine("SELECT r.Recipe_Id, u.UserId, r.Name_, r.Description_, dt.Diet_Type_Id, r.Time_Preparation, r.Servings,");
-                    sb.AppendLine("    r.Image_, f.Food_Id, r.Date_,");
+                    sb.AppendLine("    r.Image_, f.Food_Id, r.Date_, ng.Nutritional_Goal_Id,");
                     sb.AppendLine("    (SELECT STRING_AGG(p.Step_by_Step, ' ') FROM Preparation p WHERE p.Recipe_Id = r.Recipe_Id) AS Steps,");
                     sb.AppendLine("    (SELECT STRING_AGG(i.Name_, ', ')");
                     sb.AppendLine("     FROM Relationship_Recipes_Ingredients rri");
@@ -31,7 +31,8 @@ namespace CapaDatos
                     sb.AppendLine("FROM Recipes r");
                     sb.AppendLine("INNER JOIN Users u ON u.UserId = r.UserId");
                     sb.AppendLine("INNER JOIN Diet_Type dt ON dt.Diet_Type_Id = r.Diet_Type_Id");
-                    sb.AppendLine("INNER JOIN Food f ON f.Food_Id = r.Food_Id;");
+                    sb.AppendLine("INNER JOIN Food f ON f.Food_Id = r.Food_Id");
+                    sb.AppendLine("INNER JOIN Nutritional_Goals ng ON ng.Nutritional_Goal_Id = r.Nutritional_Goal_Id;");
 
                     SqlCommand cmd = new SqlCommand(sb.ToString(), oconexion);
                     cmd.CommandType = CommandType.Text;
@@ -54,6 +55,7 @@ namespace CapaDatos
                                 Image_ = Convert.ToBase64String((byte[])dr["Image_"]),
                                 oFood_Id = new Alimentos() { Food_Id = Convert.ToInt32(dr["Food_Id"]) },
                                 Date_ = Convert.ToDateTime(dr["Date_"]),
+                                oNutritional_Goal_Id = new ObjetivosNutricional() { Nutritional_Goal_Id= Convert.ToInt32(dr["Nutritional_Goal_Id"]) },
                                 Steps = dr["Steps"].ToString(),
                                 Ingredients = dr["Ingredients"].ToString()
                             });

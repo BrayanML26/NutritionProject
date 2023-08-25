@@ -45,6 +45,7 @@
     <Compile Include="CD_Alimentos.cs" />
     <Compile Include="CD_CategoriaAlimentos.cs" />
     <Compile Include="CD_Favoritos.cs" />
+    <Compile Include="CD_ObjetivosNutricional.cs" />
     <Compile Include="CD_Recetas.cs" />
     <Compile Include="CD_TipoDieta.cs" />
     <Compile Include="CD_Usuarios.cs" />

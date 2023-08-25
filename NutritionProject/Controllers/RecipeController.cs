@@ -63,6 +63,18 @@ namespace NutritionProject.Controllers
         }
         #endregion
 
+        #region OBJETIVO NUTRICIONAL
+        [HttpGet]
+        public JsonResult ListarObjetivoNutricional()
+        {
+            List<ObjetivosNutricional> oLista = new List<ObjetivosNutricional>();
+
+            oLista = new CN_ObjetivosNutricional().Listar();
+
+            return Json(new { data = oLista }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #region TIPO DIETA
         [HttpGet]
         public JsonResult ListarTipoDieta()
@@ -89,7 +101,7 @@ namespace NutritionProject.Controllers
 
         #region LISTAR RECETA 
         [HttpPost]
-        public JsonResult ListarReceta(int idtipodieta, int idalimento, string busqueda)
+        public JsonResult ListarReceta(int idtipodieta, int idalimento, string busqueda, int? idobjetivonutricional)
         {
             List<Recetas> oLista = new List<Recetas>();
 
@@ -105,12 +117,14 @@ namespace NutritionProject.Controllers
                 Image_ = r.Image_,
                 oFood_Id = r.oFood_Id,
                 Date_ = r.Date_,
+                oNutritional_Goal_Id = r.oNutritional_Goal_Id,
                 Steps = r.Steps,
                 Ingredients = r.Ingredients
-                //Datos = r.Datos
+                //
             }).Where(r =>
                 r.oDiet_Type_Id.Diet_Type_Id == (idtipodieta == 0 ? r.oDiet_Type_Id.Diet_Type_Id : idtipodieta) &&
                 r.oFood_Id.Food_Id == (idalimento == 0 ? r.oFood_Id.Food_Id : idalimento) &&
+                r.oNutritional_Goal_Id.Nutritional_Goal_Id == (idobjetivonutricional == 0 ? r.oNutritional_Goal_Id.Nutritional_Goal_Id : idobjetivonutricional) &&
                 (string.IsNullOrEmpty(busqueda) ||
                 r.Name_.Contains(busqueda) ||
                 r.Ingredients.Contains(busqueda))

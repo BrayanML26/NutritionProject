@@ -46,6 +46,7 @@
     <Compile Include="DatosNutricionales.cs" />
     <Compile Include="Favoritos.cs" />
     <Compile Include="Ingredientes.cs" />
+    <Compile Include="ObjetivosNutricional.cs" />
     <Compile Include="Porciones.cs" />
     <Compile Include="Preparacion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

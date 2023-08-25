@@ -15,6 +15,7 @@ namespace CapaEntidad
         public string Image_ { get; set; }
         public Alimentos oFood_Id { get; set; }
         public DateTime Date_ { get; set; }
+        public ObjetivosNutricional oNutritional_Goal_Id { get; set; }
 
         public string Steps { get; set; }
         public string Ingredients { get; set; }
